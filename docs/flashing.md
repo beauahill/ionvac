@@ -7,13 +7,26 @@ acceptable because the dump only matters for going back to Tuya.
 
 ## 0. Build the firmware
 
+Run everything from inside the repo checkout:
+
 ```bash
+git clone https://github.com/beauahill/ionvac.git
+cd ionvac
 python3 -m venv .venv && . .venv/bin/activate
 pip install esphome==2026.10.2 ltchiptool==4.15.0
-cp esphome/secrets.yaml.example esphome/secrets.yaml   # fill in real values
-openssl rand -base64 32                                 # one per *_key field
+cp esphome/secrets.yaml.example esphome/secrets.yaml
+```
+
+Edit `esphome/secrets.yaml`. Fill `api_encryption_key` and
+`ota_encryption_key` with two **different** values from
+`openssl rand -base64 32`, then compile:
+
+```bash
 esphome compile esphome/ionvac-v2.yaml
 ```
+
+For UART flashing on Linux, give your user access to serial ports once (then
+log out and back in): `sudo usermod -aG dialout $USER`.
 
 The output lands in `esphome/.esphome/build/ionvac-v2/.pioenvs/ionvac-v2/`:
 
