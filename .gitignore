@@ -1,0 +1,11 @@
+# Real credentials
+esphome/secrets.yaml
+# ESPHome / PlatformIO build output
+esphome/.esphome/
+.pioenvs/
+.venv*/
+# Stock firmware dumps contain the device's Tuya auth key / local key.
+# Keep them, but keep them out of git.
+dumps/
+*.bin
+*.uf2

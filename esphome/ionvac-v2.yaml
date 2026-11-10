@@ -1,0 +1,90 @@
+# ionvac SmartClean robo vac V2 (Tzumi model 8026)
+# WiFi module: Tuya WR3 (FCC ID 2ANDL-WR3, Realtek RTL8710BN, 2MB flash)
+# Design: TuyaMCU. WR3 = WiFi only, talks serial to the main MCU.
+#
+# Pinout used here (LibreTiny board "wr3"):
+#   UART0  TX0 = PA23, RX0 = PA18  -> Tuya MCU (this config's uart:)
+#   UART2  TX2 = PA30, RX2 = PA29  -> flashing + LibreTiny log output
+#
+# Stage 1 goal: get on WiFi, talk to the MCU, and log every datapoint.
+# Entities get added once datapoints are mapped (see docs/datapoints.md).
+
+substitutions:
+  name: ionvac-v2
+  friendly_name: ionvac V2
+  # TuyaMCU baud is unconfirmed. Try 9600 first, then 115200.
+  tuya_baud: "9600"
+
+esphome:
+  name: ${name}
+  friendly_name: ${friendly_name}
+
+rtl87xx:
+  board: wr3
+  framework:
+    # Pinned: SmartClean 2000 (same WR3) needed 1.9.2 for an RX bug
+    # receiving data from the MCU. Only bump after testing a newer one.
+    version: 1.9.2
+
+logger:
+  level: DEBUG
+  # Logs stay on UART2 (TX2) so they never collide with the MCU on UART0.
+  # Uncomment to see raw TuyaMCU frames while hunting the baud rate:
+  # logs:
+  #   tuya: VERY_VERBOSE
+  #   uart: VERY_VERBOSE
+
+api:
+  encryption:
+    key: !secret api_encryption_key
+
+ota:
+  - platform: esphome
+    # Encryption instead of a password: smaller and recommended on 2MB parts.
+    encryption:
+      key: !secret ota_encryption_key
+
+web_server:
+  port: 80
+  auth:
+    type: digest
+    username: !secret web_username
+    password: !secret web_password
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  # Fallback AP if the home network is unreachable.
+  ap:
+    ssid: "${name} Fallback"
+    password: !secret ap_password
+
+captive_portal:
+
+uart:
+  id: uart_mcu
+  tx_pin: PA23   # TX0
+  rx_pin: PA18   # RX0
+  baud_rate: ${tuya_baud}
+
+tuya:
+  id: tuya_mcu
+  uart_id: uart_mcu
+  # The tuya component logs "Datapoint N update to X" at DEBUG for every
+  # DP the MCU reports, mapped or not. That is all stage 1 needs.
+
+text_sensor:
+  - platform: libretiny
+    version:
+      name: LibreTiny Version
+
+sensor:
+  - platform: wifi_signal
+    name: WiFi Signal
+    update_interval: 60s
+  - platform: uptime
+    name: Uptime
+
+button:
+  - platform: restart
+    name: Restart
