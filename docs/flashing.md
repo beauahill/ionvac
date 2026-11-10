@@ -19,8 +19,11 @@ The output lands in `esphome/.esphome/build/ionvac-v2/.pioenvs/ionvac-v2/`:
 
 | File | Use it for |
 |---|---|
-| `firmware.uf2` | UART flash with ltchiptool (route B), and ESPHome OTA |
-| `image_*.ota*.bin` / other LibreTiny OTA outputs | Check which one cloudcutter wants (A.2) |
+| `firmware.uf2` | UART flash with ltchiptool (route B), and ESPHome/web OTA |
+| `image_ota1.0x00B000.bin`, `image_ota2.0x0D0000.bin` | Raw OTA slot images. Check which file cloudcutter wants (A.2) |
+
+Verified: this config builds with LibreTiny 1.9.2 on ESPHome 2026.10.2 (flash
+60% used, so OTA has headroom).
 
 `scripts/compile.sh` compiles with throwaway secrets if `secrets.yaml` is
 missing. That is for CI and cloud sessions only. **Never flash a build made
