@@ -17,9 +17,8 @@ pip install esphome==2026.10.2 ltchiptool==4.15.0
 cp esphome/secrets.yaml.example esphome/secrets.yaml
 ```
 
-Edit `esphome/secrets.yaml`. Fill `api_encryption_key` and
-`ota_encryption_key` with two **different** values from
-`openssl rand -base64 32`, then compile:
+Edit `esphome/secrets.yaml`. Fill `api_encryption_key` with the output of
+`openssl rand -base64 32` (encrypted OTA reuses this same key), then compile:
 
 ```bash
 esphome compile esphome/ionvac-v2.yaml

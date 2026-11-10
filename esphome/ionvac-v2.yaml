@@ -40,9 +40,10 @@ api:
 
 ota:
   - platform: esphome
-    # Encryption instead of a password: smaller and recommended on 2MB parts.
-    encryption:
-      key: !secret ota_encryption_key
+    # Encrypted OTA instead of a password: smaller and recommended on 2MB
+    # parts. ESPHome requires it to share the api key, so no key is given
+    # here: it reuses api_encryption_key.
+    encryption: {}
 
 web_server:
   port: 80
